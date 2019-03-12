@@ -28,16 +28,12 @@ var entities = [{
 
 // GET /todos
 app.get(entityEndpoint, (req, res) => {
-    res.type('application/json');
-
     // send an array of all current entities
-    res.send(entities);
+    res.json(entities);
 });
 
 // POST /todos
 app.post(entityEndpoint, (req, res) => {
-    res.type('application/json');
-
     // validate that the required parameter (title) is present
     if (!req.body) return res.sendStatus(400);
     if (!req.body.title) return res.sendStatus(400);
@@ -53,7 +49,7 @@ app.post(entityEndpoint, (req, res) => {
 
     // save and return the new entity
     entities.push(newEntity);
-    res.send(newEntity);
+    res.json(newEntity);
 });
 
 // helper method that searches for and returns an entity given a request with an id parameter
@@ -70,26 +66,27 @@ const findEntity = function(req, res) {
 
 // PATCH /todos
 app.patch(entityEndpoint, (req, res) => {
-    res.type('application/json');
     // retrieve the entity so we can edit it
     var entity = findEntity(req, res);
+    if (entity) {
+        // update it based on the request parameters
+        entity.done = req.body.done || entity.done;
+        entity.title = req.body.title || entity.title;
 
-    // update it based on the request parameters
-    entity.done = req.body.done || entity.done;
-    entity.title = req.body.title || entity.title;
-
-    // return updated entity
-    res.send(entity);
+        // return updated entity
+        res.json(entity);
+    }
 });
 
 // DELETE /todos
 app.delete(entityEndpoint, (req, res) => {
-    res.type('application/json');
     // retrieve the entity so we can return it (and make sure it exists)
     var entity = findEntity(req, res);
-    // filter entities (removes the entity)
-    entities = entities.filter((e) => e.id !== entity.id);
 
-    // return deleted entity
-    res.send(entity);
+    if (entity) {
+        // filter entities (removes the entity)
+        entities = entities.filter((e) => e.id !== entity.id);
+        // return deleted entity
+        res.json(entity);
+    }
 });
