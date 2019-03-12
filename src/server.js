@@ -5,11 +5,11 @@ const app = express();
 
 const port = 3000;
 
-// parse application/json and application/x-www-form-urlencoded
+// Parameter im JSON-Format und aus einem Web-Formular korrekt einlesen
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// start the server and add root endpoint
+// Server starten und einen Einstiegspunkt auf localhost:port/ veröffentlichen 
 app.listen(port, function() {
     console.log(`Server is running on localhost:${port}`);
 });
@@ -17,8 +17,10 @@ app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
-// add CRUD routes for entity type
+// CRUD (create-read-update-delete, d.h. erstellen-lesen-bearbeiten-löschen) Endpoints erstellen
 const entityEndpoint = "/todos";
+
+// dieses Array speichert alle Objekte (im Arbeitsspeicher)
 var entities = [{
     id: uuidv4(),
     title: "This is the default ToDo item",
@@ -26,19 +28,19 @@ var entities = [{
     createdAt: Date()
 }];
 
-// GET /todos
+// GET /todos (alle ToDos lesen)
 app.get(entityEndpoint, (req, res) => {
-    // send an array of all current entities
+    // unsere Variable 'entities' als JSON-Array zurückgeben
     res.json(entities);
 });
 
-// POST /todos
+// POST /todos (neues ToDo erstellen)
 app.post(entityEndpoint, (req, res) => {
-    // validate that the required parameter (title) is present
+    // sicherstellen, dass die für ein ToDo-Item nötigen Parameter übergeben wurden (sonst Error 400 ausgeben ("Bad Request"))
     if (!req.body) return res.sendStatus(400);
     if (!req.body.title) return res.sendStatus(400);
 
-    // create the new entity (set done to false by default)
+    // das neue ToDo-Item erstellen mit dem Titel aus den Parametern
     const doneValue = req.body.done || false;
     var newEntity = {
         id: uuidv4(),
@@ -47,46 +49,45 @@ app.post(entityEndpoint, (req, res) => {
         createdAt: Date()
     };
 
-    // save and return the new entity
+    // das neue ToDo-Item an unsere Liste anhängen und zurückgeben
     entities.push(newEntity);
     res.json(newEntity);
 });
 
-// helper method that searches for and returns an entity given a request with an id parameter
+// Hilfs-Funktion, die gegeben ein Request "req" mit einem "id"-Parameter im Body ein ToDo-Item mit dieser ID sucht und ggf. zurückgibt
 const findEntity = function(req, res) {
-    // ensure the id parameter is present
+    // sicherstellen, dass ein "id"-Parameter übergeben wurde
     if (!req.body) return res.sendStatus(400);
     if (!req.body.id) return res.sendStatus(400);
 
-    // find the right entity based on the given id
+    // durch unsere Liste an ToDo-Items gehen und nach einem Eintrag mit der passenden ID suchen (falls nicht gefunden Error 404 ausgeben ("Not Found"))
     var entity = entities.find((e) => e.id === req.body.id);
     if (!entity) return res.sendStatus(404);
     return entity
 }
 
-// PATCH /todos
+// PATCH /todos (ein existierendes ToDo-Item bearbeiten, d.h. den Titel ändern und/oder es als (nicht) "done" markieren)
 app.patch(entityEndpoint, (req, res) => {
-    // retrieve the entity so we can edit it
+    // ToDo-Item mit der gegebenen ID suchen, damit wir es bearbeiten können
     var entity = findEntity(req, res);
     if (entity) {
-        // update it based on the request parameters
+        // ToDo-Item falls gefunden basierend auf den Parametern bearbeiten
         entity.done = req.body.done || entity.done;
         entity.title = req.body.title || entity.title;
 
-        // return updated entity
+        // bearbeitetes ToDo-Item zurückgeben
         res.json(entity);
     }
 });
 
-// DELETE /todos
+// DELETE /todos (ein existierendes ToDo-Item löschen)
 app.delete(entityEndpoint, (req, res) => {
-    // retrieve the entity so we can return it (and make sure it exists)
+    // ToDo-Item mit der gegebenen ID suchen, damit wir wissen, dass es existiert und wir es zurückgeben können
     var entity = findEntity(req, res);
-
     if (entity) {
-        // filter entities (removes the entity)
+        // unsere Liste an ToDo-Items ändern, indem wir alle Items mit der gegebenen ID löschen
         entities = entities.filter((e) => e.id !== entity.id);
-        // return deleted entity
+        // das aus der Liste gelöschte ToDo-Item zurückgeben
         res.json(entity);
     }
 });
