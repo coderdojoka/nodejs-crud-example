@@ -1,10 +1,14 @@
-# Node.js CRUD Example
+# Node.js CRUD Beispiel
 
 ## Installation
-Download the Node installer for your machine OS from [the official Node.js website](https://nodejs.org/en/download/).
-To verify everything is set up correctly, run `node --version` in a Terminal. It should print the installed Node version number, for example `v10.14.1`.
+1. Lade den Node.js Installer für dein Betriebsystem (z.B. macOS, Linux oder Windows) von dieser Website herunter: https://nodejs.org/en/download/
 
-This installation includes NPM (the Node Package Manager) which we will use to manage our dependencies.
+2. Starte den Installer und folge den Anweisungen und schließe die Installation ab. Vielleicht musst du danach deinen Computer neu starten, damit die Änderungen aktiv werden.
 
-## Running 
-Run `npm start` or `node src/server.js` from the root directory to start the server on your local machine.
+3. Um zu testen, ob bei der Installation alles funktioniert hat, öffne ein Terminal (Kommandozeile unter Windows), und gib `node --version` ein. Falls Node erfolgreich installiert wurde, wird die installierte Versionsnummer ausgegeben, bspw. `v10.14.1`.
+
+Diese Installation schließt NPM (Node Package Manager, d.h. eine Verwaltung von Hilfs-Paketen) mit ein.
+
+## Den Server starten 
+Navigiere mit einem Terminal / Kommandozeile in den Root-Ordner, d.h. der Ordner, in dem sich bspw. diese Datei `README.md` befindet.
+Du kannst den Server auf deiner lokalen Maschine starten, in dem du dann `npm start` oder `node src/server.js` eingibst. 
