@@ -72,8 +72,8 @@ app.patch(entityEndpoint, (req, res) => {
     var entity = findEntity(req, res);
     if (entity) {
         // ToDo-Item falls gefunden basierend auf den Parametern bearbeiten
-        entity.done = req.body.done || entity.done;
-        entity.title = req.body.title || entity.title;
+        entity.done = (req.body.done === undefined) ? entity.done : req.body.done;
+        entity.title = (req.body.title === undefined) ? entity.title : req.body.title;
 
         // bearbeitetes ToDo-Item zurückgeben
         res.json(entity);
